@@ -25,7 +25,7 @@
                         @if (isset($snacksMorning))
                             <div class="text-center p-3">
                                 <h4>Snacks - Morning</h4>
-                                <span class="h3 text-primary">{{ $snacksMorning }}</span>
+                                <span class="h3 text-primary">{{ $snacksMorning }} People</span>
                             </div>
                         @endif
 
@@ -33,14 +33,14 @@
                         @if (isset($snacksAfternoon))
                             <div class="text-center p-3">
                                 <h4>Snacks - Afternoon</h4>
-                                <span class="h3 text-warning">{{ $snacksAfternoon }}</span>
+                                <span class="h3 text-warning">{{ $snacksAfternoon }} People</span>
                             </div>
                         @endif
                         <!-- Lunch -->
                         @if (isset($lunch))
                             <div class="text-center p-3">
                                 <h4>Lunch</h4>
-                                <span class="h3 text-success">{{ $lunch }}</span>
+                                <span class="h3 text-success">{{ $lunch }} People</span>
                             </div>
                         @endif
                     </div>
@@ -63,7 +63,7 @@
                                 <div class="text-center">
                                     <h4>Snacks - Morning</h4>
                                     @foreach ($snackItemsMorning as $item => $quantity)
-                                        <p>{{ $item }}: {{ $quantity }}</p>
+                                        <p>{{ $item }}: {{ $quantity }} Pics</p>
                                     @endforeach
                                 </div>
                             @endif
@@ -71,7 +71,7 @@
                                 <div class="text-center">
                                     <h4>Snacks - Afternoon</h4>
                                     @foreach ($snackItemsAfternoon as $item => $quantity)
-                                        <p>{{ $item }}: {{ $quantity }}</p>
+                                        <p>{{ $item }}: {{ $quantity }} Pics</p>
                                     @endforeach
                                 </div>
                             @endif

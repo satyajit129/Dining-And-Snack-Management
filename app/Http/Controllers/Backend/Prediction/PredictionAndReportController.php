@@ -2,95 +2,124 @@
 
 namespace App\Http\Controllers\Backend\Prediction;
 
+use App\Enums\ShiftEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Manpower;
+use App\Models\MenuItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class PredictionAndReportController extends Controller
 {
+
     public function predictionReportIndex()
     {
         try {
-            $snacksPrediction = $this->predictSnacks();
-            $lunchPrediction = $this->predictLunch();
-            $itemQtyCalculation = $this->calculateItemQty();
-            $data = [
-                'snacksPrediction' => $snacksPrediction,
-                'lunchPrediction' => $lunchPrediction,
-                'itemQtyCalculation' => $itemQtyCalculation,
-            ];
-
-            // Pass data to the view
-            return view('backend.pages.prediction.index', compact('data'));
-        } catch (\Throwable $th) {
-            return response()->json(['error' => $th->getMessage()], 500);
+            // Data excluding today's date (for today's prediction)
+            $manpowerForTodayPrediction = Manpower::where('date', '<', now()->format('Y-m-d'))->get();
+    
+            // Data including today's date (for next day's prediction)
+            $manpowerForNextDayPrediction = Manpower::all();
+    
+            // Calculate averages for today's prediction
+            $averageMorningSnacksToday = $this->calculateAverageSnacksMorning($manpowerForTodayPrediction);
+            $averageAfternoonSnacksToday = $this->calculateAverageSnacksAfternoon($manpowerForTodayPrediction);
+            $averageLunchToday = $this->calculateAverageLunch($manpowerForTodayPrediction);
+    
+            // Calculate averages for next day's prediction
+            $averageMorningSnacksNextDay = $this->calculateAverageSnacksMorning($manpowerForNextDayPrediction);
+            $averageAfternoonSnacksNextDay = $this->calculateAverageSnacksAfternoon($manpowerForNextDayPrediction);
+            $averageLunchNextDay = $this->calculateAverageLunch($manpowerForNextDayPrediction);
+    
+            // Predicted values
+            $predictedMorningSnacksToday = $averageMorningSnacksToday;
+            $predictedAfternoonSnacksToday = $averageAfternoonSnacksToday;
+            $predictedLunchToday = $averageLunchToday;
+    
+            $predictedMorningSnacksNextDay = $averageMorningSnacksNextDay;
+            $predictedAfternoonSnacksNextDay = $averageAfternoonSnacksNextDay;
+            $predictedLunchNextDay = $averageLunchNextDay;
+    
+            // Calculate item quantities
+            $predictedSnackItemsMorningToday = $this->calculateSnackItems($predictedMorningSnacksToday);
+            $predictedSnackItemsAfternoonToday = $this->calculateSnackItems($predictedAfternoonSnacksToday);
+            $predictedLunchItemsToday = $this->calculateLunchItems($predictedLunchToday);
+    
+            $predictedSnackItemsMorningNextDay = $this->calculateSnackItems($predictedMorningSnacksNextDay);
+            $predictedSnackItemsAfternoonNextDay = $this->calculateSnackItems($predictedAfternoonSnacksNextDay);
+            $predictedLunchItemsNextDay = $this->calculateLunchItems($predictedLunchNextDay);
+    
+            // Pass all calculated data to the view
+            return view('backend.pages.prediction.index', compact(
+                'averageMorningSnacksToday', 'averageAfternoonSnacksToday', 'predictedMorningSnacksToday', 'predictedAfternoonSnacksToday',
+                'predictedSnackItemsMorningToday', 'predictedSnackItemsAfternoonToday', 'averageLunchToday', 'predictedLunchItemsToday', 'predictedLunchToday',
+                'averageMorningSnacksNextDay', 'averageAfternoonSnacksNextDay', 'predictedMorningSnacksNextDay', 'predictedAfternoonSnacksNextDay',
+                'predictedSnackItemsMorningNextDay', 'predictedSnackItemsAfternoonNextDay', 'averageLunchNextDay', 'predictedLunchItemsNextDay', 'predictedLunchNextDay'
+            ));
+        } catch (Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
-    protected function predictSnacks()
+    private function calculateAverageSnacksMorning($manpower)
     {
-        $today = now()->format('Y-m-d');
-        $manpowerToday = Manpower::where('date', $today)->get();
+        $totalMorningManpower = $manpower->whereIn('shift_id', [
+            ShiftEnum::SHIFT_A->value,
+            ShiftEnum::GENERAL_SHIFT->value
+        ])->sum('count');
 
-        // Calculate snack predictions for today
-        $morningSnacksQty = ($manpowerToday->whereIn('shift_id', [1, 2])->sum('count')) * 2; // Example: 2 snacks per person
-        $afternoonSnacksQty = ($manpowerToday->whereIn('shift_id', [3, 4])->sum('count')) * 1; // Example: 1 snack per person
+        $distinctDates = $manpower->unique('date')->count();
 
-        // Predict for tomorrow based on average manpower
-        $averageManpower = Manpower::select('shift_id', DB::raw('AVG(count) as avg_count'))
-            ->groupBy('shift_id')
-            ->get();
-        $tomorrowMorningSnacksQty = ($averageManpower->whereIn('shift_id', [1, 2])->sum('avg_count')) * 2;
-        $tomorrowAfternoonSnacksQty = ($averageManpower->whereIn('shift_id', [3, 4])->sum('avg_count')) * 1;
-
-        return [
-            'today' => [
-                'morning' => $morningSnacksQty,
-                'afternoon' => $afternoonSnacksQty,
-            ],
-            'tomorrow' => [
-                'morning' => $tomorrowMorningSnacksQty,
-                'afternoon' => $tomorrowAfternoonSnacksQty,
-            ],
-        ];
+        return $distinctDates ? $totalMorningManpower / $distinctDates : 0;
     }
-    protected function predictLunch()
+    private function calculateAverageSnacksAfternoon($manpower)
     {
-        $today = now()->format('Y-m-d');
-        $manpowerToday = Manpower::where('date', $today)->get();
+        $totalAfternoonManpower = $manpower->whereIn('shift_id', [
+            ShiftEnum::SHIFT_B->value,
+            ShiftEnum::SHIFT_C->value
+        ])->sum('count');
 
-        // Calculate lunch predictions for today
-        $lunchQty = ($manpowerToday->whereIn('shift_id', [1, 2, 3])->sum('count')) * 150; // Example: 150g of food per person
+        $distinctDates = $manpower->unique('date')->count();
 
-        // Predict for tomorrow based on average manpower
-        $averageManpower = Manpower::select('shift_id', DB::raw('AVG(count) as avg_count'))
-            ->groupBy('shift_id')
-            ->get();
-        $tomorrowLunchQty = ($averageManpower->whereIn('shift_id', [1, 2, 3])->sum('avg_count')) * 150;
-
-        return [
-            'today' => $lunchQty,
-            'tomorrow' => $tomorrowLunchQty,
-        ];
+        return $distinctDates ? $totalAfternoonManpower / $distinctDates : 0;
     }
-    protected function calculateItemQty()
+    private function calculateAverageLunch($manpower)
     {
-        
-        $snackItems = [
-            'banana' => ['morning' => 2, 'afternoon' => 1], // Example: 2 pieces per person in the morning, 1 in the afternoon
-            'biscuit' => ['morning' => 1, 'afternoon' => 1], // Example: 1 piece per person in both sessions
-        ];
-
-        $lunchItems = [
-            'beef' => ['today' => 150, 'tomorrow' => 150], // Example: 150g per person
-            'rice' => ['today' => 120, 'tomorrow' => 120], // Example: 120g per person
-        ];
-
-        return [
-            'snacks' => $snackItems,
-            'lunch' => $lunchItems,
-        ];
+        $totalLunchManpower = $manpower->whereIn('shift_id', [
+            ShiftEnum::SHIFT_A->value,
+            ShiftEnum::GENERAL_SHIFT->value,
+            ShiftEnum::SHIFT_B->value
+        ])->sum('count');
+        $distinctDates = $manpower->unique('date')->count();
+        return $distinctDates ? $totalLunchManpower / $distinctDates : 0;
     }
+    private function calculateSnackItems($manpowerCount)
+    {
+        $snackItems = MenuItem::where('menu_id', 1)->get();
+        $calculatedItems = [];
+        foreach ($snackItems as $item) {
+            $calculatedItems[$item->item_name] = $manpowerCount * $item->quantity_per_person;
+        }
+        return $calculatedItems;
+    }
+    private function calculateLunch($manpower)
+    {
+        return $manpower->whereIn('shift_id', [
+            ShiftEnum::SHIFT_A->value,
+            ShiftEnum::GENERAL_SHIFT->value,
+            ShiftEnum::SHIFT_B->value
+        ])->sum('count');
+    }
+    private function calculateLunchItems($manpowerCount)
+    {
+        $lunchItems = MenuItem::where('menu_id', 2)->get();
+        $calculatedItems = [];
 
+        foreach ($lunchItems as $item) {
+            $calculatedItems[$item->item_name] = $manpowerCount * $item->quantity_per_person;
+        }
+
+        return $calculatedItems;
+    }
 }

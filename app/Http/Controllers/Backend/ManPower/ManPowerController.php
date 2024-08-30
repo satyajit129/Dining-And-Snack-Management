@@ -14,8 +14,9 @@ class ManPowerController extends Controller
     public function manpowerIndex()
     {
         try {
+            
             $shifts = Shift::all();
-            $manpowers = Manpower::where('status', 1)->with('shift')->paginate(10);
+            $manpowers = Manpower::where('status', 1)->with('shift')->latest()->paginate(10);
             return view('backend.pages.manpower.index', compact('manpowers', 'shifts'));
         } catch (Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);

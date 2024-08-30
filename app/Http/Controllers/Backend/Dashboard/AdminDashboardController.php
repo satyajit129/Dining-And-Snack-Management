@@ -19,6 +19,7 @@ class AdminDashboardController extends Controller
             $weekday_name = Carbon::now()->format('l');
             $manpower = Manpower::whereDate('date', $today_date)->get();
             $snacksMorning = $this->calculateSnacksMorning($manpower);
+            // dd($snacksMorning);
             $snacksAfternoon = $this->calculateSnacksAfternoon($manpower);
             $lunch = $this->calculateLunch($manpower);
 

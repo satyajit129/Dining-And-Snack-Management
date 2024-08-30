@@ -62,6 +62,7 @@
                                         {{ 'Weekly' }}
                                         @endif
                                     </td>
+                                   
                                     <td>
                                         <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $menu_item->id }}"
                                             data-type="{{ $menu_item->type }}" data-name="{{ $menu_item->name }}"

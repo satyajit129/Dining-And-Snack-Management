@@ -45,7 +45,10 @@
                         </thead>
                         <tbody>
                             @foreach ($manpowers as $manpower)
-                                <tr id="manpower-row-{{ $manpower->id }}">
+                            @php
+                                $isToday = \Carbon\Carbon::parse($manpower->date)->isToday();
+                            @endphp
+                                <tr id="manpower-row-{{ $manpower->id }}" class="{{ $isToday ? 'bg-info text-white' : '' }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $manpower->shift->name }}</td>
                                     <td>{{ $manpower->date }}</td>
