@@ -64,14 +64,14 @@
                                     </td>
 
                                     <td>
-                                        <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $menu_item->id }}"
+                                        <button class="btn btn-warning btn-sm btn-pill edit-btn" data-id="{{ $menu_item->id }}"
                                             data-type="{{ $menu_item->type }}" data-name="{{ $menu_item->name }}"
                                             data-quantity="{{ $menu_item->quantity }}">
                                             Edit
                                         </button>
                                     </td>
                                     <td>
-                                        <button class="btn btn-danger btn-sm delete-btn"
+                                        <button class="btn btn-danger btn-sm btn-pill delete-btn"
                                             data-id="{{ $menu_item->id }}">Delete</button>
                                     </td>
                                 </tr>

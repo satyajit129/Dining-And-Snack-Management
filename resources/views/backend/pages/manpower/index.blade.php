@@ -56,14 +56,14 @@
                                     <td>{{ \Carbon\Carbon::parse($manpower->date)->format('d-m-Y') }}</td>
                                     <td>{{ $manpower->count }}</td>
                                     <td>
-                                        <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $manpower->id }}"
+                                        <button class="btn btn-warning btn-sm btn-pill edit-btn" data-id="{{ $manpower->id }}"
                                             data-shift-id="{{ $manpower->shift_id }}" data-count="{{ $manpower->count }}"
                                             data-date="{{ $manpower->date }}">
                                             Edit
                                         </button>
                                     </td>
                                     <td>
-                                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $manpower->id }}"
+                                        <button class="btn btn-danger btn-sm btn-pill delete-btn" data-id="{{ $manpower->id }}"
                                             data-shift-id="{{ $manpower->shift_id }}" data-count="{{ $manpower->count }}"
                                             data-date="{{ $manpower->date }}">
                                             Delete
