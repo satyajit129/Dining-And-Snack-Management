@@ -13,11 +13,10 @@
 
             <ul class="nav navbar-nav">
                 <!-- Offcanvas -->
-               
+
                 <!-- User Account -->
                 <li class="dropdown user-menu">
                     <button class="dropdown-toggle nav-link" data-toggle="dropdown">
-                        <img src="{{ asset('admin/profile/' . Auth::user()->picture) }}" class="user-image rounded-circle" alt="User Image" />
                         <span class="d-none d-lg-inline-block">{{ Auth::user()->name }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">

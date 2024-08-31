@@ -18,44 +18,71 @@ class AdminDashboardController extends Controller
             $today_date = Carbon::now()->format('Y-m-d');
             $weekday_name = Carbon::now()->format('l');
             $manpower = Manpower::whereDate('date', $today_date)->get();
-            $snacksMorning = $this->calculateSnacksMorning($manpower);
-            // dd($snacksMorning);
-            $snacksAfternoon = $this->calculateSnacksAfternoon($manpower);
-            $lunch = $this->calculateLunch($manpower);
+            $snacksMorning_array = $this->calculateSnacksMorning($manpower);
+            // dd($snacksMorning_array);
+            $snacksAfternoon_array = $this->calculateSnacksAfternoon($manpower);
+            $lunch_array = $this->calculateLunch($manpower);
+
+
+            $snacksMorning = $snacksMorning_array['count'];
+            $snacksAfternoon = $snacksAfternoon_array['count'];
+            $lunch = $lunch_array['count'];
 
             // Calculate snack item quantities
             $snackItemsMorning = $this->calculateSnackItems($snacksMorning);
             $snackItemsAfternoon = $this->calculateSnackItems($snacksAfternoon);
             $lunchItems = $this->calculateLunchItems($lunch);
 
-            return view('backend.pages.dashboard.admin_dashboard', compact('snacksMorning', 'snacksAfternoon', 'lunch', 'weekday_name', 'snackItemsMorning', 'snackItemsAfternoon','lunchItems'));
+            return view('backend.pages.dashboard.admin_dashboard', compact('snacksMorning_array', 'snacksAfternoon_array', 'lunch_array', 'weekday_name', 'snackItemsMorning', 'snackItemsAfternoon', 'lunchItems'));
         } catch (Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
         }
     }
     private function calculateSnacksMorning($manpower)
     {
-        return $manpower->whereIn('shift_id', [
-            ShiftEnum::SHIFT_A->value,
-            ShiftEnum::GENERAL_SHIFT->value
-        ])->sum('count');
+        $shiftA = ShiftEnum::SHIFT_A->value;
+        $generalShift = ShiftEnum::GENERAL_SHIFT->value;
+        $shiftACount = $manpower->where('shift_id', $shiftA)->sum('count');
+        $generalShiftCount = $manpower->where('shift_id', $generalShift)->sum('count');
+        $totalCount = $shiftACount + $generalShiftCount;
+        return [
+            'shiftA' => 'shiftA - ' . $shiftACount,
+            'generalShift' => 'generalShift - ' . $generalShiftCount,
+            'count' => $totalCount
+        ];
     }
 
     private function calculateSnacksAfternoon($manpower)
     {
-        return $manpower->whereIn('shift_id', [
-            ShiftEnum::SHIFT_B->value,
-            ShiftEnum::SHIFT_C->value
-        ])->sum('count');
+        $shiftB = ShiftEnum::SHIFT_B->value;
+        $shiftC = ShiftEnum::SHIFT_C->value;
+        $shiftBCount = $manpower->where('shift_id', $shiftB)->sum('count');
+        $shiftCCount = $manpower->where('shift_id', $shiftC)->sum('count');
+        $totalCount = $shiftBCount + $shiftCCount;
+        return [
+            'shiftB' => 'shiftB - ' . $shiftBCount,
+            'shiftC' => 'shiftC - ' . $shiftCCount,
+            'count' => $totalCount
+        ];
     }
+
 
     private function calculateLunch($manpower)
     {
-        return $manpower->whereIn('shift_id', [
-            ShiftEnum::SHIFT_A->value,
-            ShiftEnum::GENERAL_SHIFT->value,
-            ShiftEnum::SHIFT_B->value
-        ])->sum('count');
+        $shiftA = ShiftEnum::SHIFT_A->value;
+        $generalShift = ShiftEnum::GENERAL_SHIFT->value;
+        $shiftB = ShiftEnum::SHIFT_B->value;
+        $shiftACount = $manpower->where('shift_id', $shiftA)->sum('count');
+        $generalShiftCount = $manpower->where('shift_id', $generalShift)->sum('count');
+        $shiftBCount = $manpower->where('shift_id', $shiftB)->sum('count');
+
+        $totalCount = $shiftACount + $generalShiftCount + $shiftBCount;
+        return [
+            'shiftA' => 'shiftA - ' . $shiftACount,
+            'generalShift' => 'generalShift - ' . $generalShiftCount,
+            'shiftB' => 'shiftB - ' . $shiftBCount,
+            'count' => $totalCount
+        ];
     }
     private function calculateSnackItems($manpowerCount)
     {

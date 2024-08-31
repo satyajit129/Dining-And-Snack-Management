@@ -24,7 +24,7 @@
                     </div>
                 @endif
                 <div class="card-header align-items-center px-3 px-md-5">
-                    <h2>ManPower Index</h2>
+                    <h2>ManPower Index </h2> <span class="badge badge-sm bg-info text-white">(This background color Refers that this data is based on today)</span>
 
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_add">
                         Add ManPower
@@ -38,7 +38,7 @@
                                 <th scope="col">#</th>
                                 <th scope="col">Shift Name</th>
                                 <th scope="col">Date</th>
-                                <th scope="col">Count</th>
+                                <th scope="col">ManPower Count</th>
                                 <th scope="col">Edit</th>
                                 <th scope="col">Delete</th>
                             </tr>
@@ -51,7 +51,7 @@
                                 <tr id="manpower-row-{{ $manpower->id }}" class="{{ $isToday ? 'bg-info text-white' : '' }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $manpower->shift->name }}</td>
-                                    <td>{{ $manpower->date }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($manpower->date)->format('d-m-Y') }}</td>
                                     <td>{{ $manpower->count }}</td>
                                     <td>
                                         <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $manpower->id }}"
@@ -71,7 +71,7 @@
                             @endforeach
                         </tbody>
                     </table>
-                    
+
                     {{ $manpowers->links() }}
                 </div>
             </div>
@@ -88,7 +88,7 @@
                 </x-select>
                 <x-input type="number" id="count" name="count" value="{{ old('count') }}"
                     placeholder="Enter your count" label="Count" />
-                
+
             </form>
 
             <x-slot name="footer">
@@ -125,7 +125,7 @@
                         console.log(response);
                         $('#modal_add').modal('hide');
                         let formatted_date = moment(response.manpower.date).format(
-                            'YYYY-MM-DD');
+                            'DD-MM-YYYY');
                             let rowCount = $('#ManpowerFormtable tr').length;
                             let newIndex = rowCount;
                         let newRow = `
@@ -156,7 +156,7 @@
                         }
                     }
                 });
-                
+
             });
             $('.modal-close').on('click', function() {
                     $('#modal_add').modal('hide');
@@ -191,9 +191,9 @@
                                 data: formData,
                                 success: function(response) {
                                     $('#modal_edit').modal('hide');
-                                    
-                                    let formatted_date = moment(response.manpower.date).format('YYYY-MM-DD');
-                                    
+
+                                    let formatted_date = moment(response.manpower.date).format('DD-MM-YYYY');
+
                                     let updatedRow = `
                                         <tr id="manpower-row-${response.manpower.id}">
                                             <td>${response.manpower.id}</td>
@@ -208,16 +208,16 @@
                                                 </button>
                                             </td>
                                             <td>
-                                                <button class="btn btn-danger btn-sm" data-id="${response.manpower.id}"
+                                                <button class="btn btn-danger btn-sm delete-btn" data-id="${response.manpower.id}"
                                                     data-shift-id="${response.manpower.shift_id}" data-count="${response.manpower.count}"
                                                     data-date="${formatted_date}">Delete</button>
                                             </td>
                                         </tr>
                                     `;
-                                    
+
                                     // Replace the existing row with the updated data
                                     $(`#manpower-row-${response.manpower.id}`).replaceWith(updatedRow);
-                                    
+
                                     if (response.success) {
                                         toastr.success(response.success);
                                         setTimeout(function() {
@@ -226,10 +226,11 @@
                                     }
                                 },
                                 error: function(xhr, status, error) {
+                                    $('#modal_edit').modal('hide');
                                     if (xhr.responseJSON && xhr.responseJSON.error) {
                                         toastr.error(xhr.responseJSON.error, 'Error');
                                     } else {
-                                    
+
                                 }}
                             })
                         });
@@ -257,7 +258,7 @@
                 var id = $(this).data('id');
                 // Show confirmation dialog
             var confirmation = confirm('Are you sure you want to delete this data?');
-            
+
             if (confirmation) {
                 var id = $(this).data('id');
                 $.ajax({
@@ -273,7 +274,7 @@
                             toastr.success(response.success);
                             setTimeout(function() {
                                 location.reload();
-                            }, 2000); 
+                            }, 2000);
                         }
                     },
                     error: function(xhr, status, error) {

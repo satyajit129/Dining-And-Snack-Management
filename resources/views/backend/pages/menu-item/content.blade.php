@@ -1,7 +1,7 @@
 <form id="menuItemFormUpdate">
     @csrf
     <input type="hidden" name="id" value="{{ $menu_item->id }}">
-    
+
     <x-select name="menu_id" class="form-control" id="menu_id" label="Menu">
         <option selected disabled>Select Menu</option>
         @foreach ($menus as $menu)
@@ -10,10 +10,10 @@
             </option>
         @endforeach
     </x-select>
-    
+
     <x-input type="text" id="item_name" name="item_name" value="{{ $menu_item->item_name }}" placeholder="Item Name"
         label="Item Name" />
-    
+
     <div class="form-group col-md-12 mb-4">
         <label class="text-dark font-weight-medium" for="">Quantity Per Person
             <span class="text-danger">(If the quantity count is in grams, please check the checkbox)</span>
@@ -27,7 +27,7 @@
                     </label>
                 </div>
             </div>
-            <input id="quantity_per_person" name="quantity_per_person" type="text" class="form-control"
+            <input id="quantity_per_person" name="quantity_per_person" type="number" class="form-control"
                 aria-label="Text input with checkbox" value="{{ $menu_item->quantity_per_person }}">
         </div>
     </div>
@@ -35,9 +35,9 @@
         <option selected disabled>Select Menu Assignment</option>
         <option value="1" {{ $menu_item->menu_assignment == '1' ? 'selected' : '' }}>Daily</option>
         <option value="2" {{ $menu_item->menu_assignment == '2' ? 'selected' : '' }}>Weekly</option>
-        
+
     </x-select>
-    
+
     <button type="submit" id="UpdateMenuItem" class="btn btn-sm btn-primary">Save changes</button>
 </form>
 

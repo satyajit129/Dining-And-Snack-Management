@@ -29,7 +29,7 @@ class MenuItemController extends Controller
             $validator = Validator::make($request->all(), [
                 'menu_id' => 'required',
                 'item_name' => 'required',
-                'quantity_per_person' => 'required',
+                'quantity_per_person' => 'required|integer',
                 'in_grams' => 'nullable',
                 'menu_assignment' => 'required',
             ]);
@@ -72,7 +72,7 @@ class MenuItemController extends Controller
                 'id' => 'required|exists:menu_items,id',
                 'menu_id' => 'required|exists:menus,id',
                 'item_name' => 'required',
-                'quantity_per_person' => 'required',
+                'quantity_per_person' => 'required|integer',
                 'in_grams' => 'nullable',
                 'menu_assignment' => 'required',
             ]);
@@ -102,7 +102,7 @@ class MenuItemController extends Controller
             $menu_item = MenuItem::find($id);
             $menu_item->status = 0;
             $menu_item->save();
-        
+
             $menu_item->load('menu');
             return response()->json([
                 'success' => 'Menu Item Deleted successfully',
@@ -111,7 +111,7 @@ class MenuItemController extends Controller
         } catch (Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
-        
+
     }
 
 }

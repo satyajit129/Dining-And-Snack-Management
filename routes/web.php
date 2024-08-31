@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\ManPower\ManPowerController;
 use App\Http\Controllers\Backend\Menu\MenuController;
 use App\Http\Controllers\Backend\Menu\MenuItemController;
 use App\Http\Controllers\Backend\Prediction\PredictionAndReportController;
+use App\Http\Controllers\Backend\Shift\ShiftWiseMenuController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -23,7 +24,7 @@ Route::get('/', function () {
 Route::middleware([AdminMiddleware::class])->prefix('admin')->group(function () {
     Route::get('logout', [AdminAuthController::class, 'adminLogout'])->name('adminLogout');
     Route::get('dashboard', [AdminDashboardController::class, 'adminDashboard'])->name('adminDashboard');
-    
+
     // man power routes
     Route::get('manpower-index',[ManPowerController::class,'manpowerIndex'])->name('manpowerIndex');
     Route::post('manpower-store',[ManPowerController::class,'manpowerStore'])->name('manpowerStore');
@@ -40,6 +41,9 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->group(function () 
 
     // prediction and report routes
     Route::get('prediction-report-index',[PredictionAndReportController::class,'predictionReportIndex'])->name('predictionReportIndex');
+
+    // Shift Wise Menu
+    Route::get('shift-wise-menu-index',[ShiftWiseMenuController::class,'shiftWiseMenuIndex'])->name('shiftWiseMenuIndex');
 });
 
 // Auth::routes();

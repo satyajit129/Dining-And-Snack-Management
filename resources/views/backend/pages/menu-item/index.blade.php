@@ -62,7 +62,7 @@
                                         {{ 'Weekly' }}
                                         @endif
                                     </td>
-                                   
+
                                     <td>
                                         <button class="btn btn-warning btn-sm edit-btn" data-id="{{ $menu_item->id }}"
                                             data-type="{{ $menu_item->type }}" data-name="{{ $menu_item->name }}"
@@ -106,7 +106,7 @@
                                 </label>
                             </div>
                         </div>
-                        <input id="quantity_per_person" name="quantity_per_person" type="text" class="form-control"
+                        <input id="quantity_per_person" name="quantity_per_person" type="number" class="form-control"
                             aria-label="Text input with checkbox">
                     </div>
                 </div>
@@ -216,7 +216,7 @@
 
                         // Ensure form submission is handled properly
                         $('#UpdateMenuItem').on('click', function(e) {
-                            event.preventDefault(); 
+                            event.preventDefault();
 
                             let formData = $('#menuItemFormUpdate').serialize();
                             $.ajax({
@@ -227,11 +227,10 @@
                                     if (response) {
                                         let rowCount = $(
                                                 '#MenuItemFormtable tr')
-                                            .length; // Adjust selector as needed
+                                            .length;
                                         let newIndex = rowCount +
-                                        1; // Adjust index calculation if necessary
+                                        1;
 
-                                        // Conditional logic for in_grams
                                         let quantityInfo = response
                                             .menu_item.in_grams == '2' ?
                                             `<span class="text-danger">(grams)</span>` :
@@ -262,6 +261,7 @@
                                     }
                                 },
                                 error: function(xhr, status, error) {
+                                    $('#modal_edit').modal('hide');
                                     if (xhr.responseJSON && xhr.responseJSON
                                         .error) {
                                         toastr.error(xhr.responseJSON.error,

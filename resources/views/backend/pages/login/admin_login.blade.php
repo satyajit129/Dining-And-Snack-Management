@@ -5,7 +5,7 @@
 <head>
 
     @include('backend.global.css_support')
-    
+
 </head>
 
 <body class="bg-light-gray" id="body">
@@ -44,31 +44,36 @@
     <script>
         $(document).ready(function() {
             $('#loginButton').click(function(e) {
-                e.preventDefault(); 
+                e.preventDefault();
                 var formData = $('#loginForm').serialize();
-                
+
                 $.ajax({
-                    url: "{{ route('adminLoginRequest') }}", 
-                    method: 'POST', 
+                    url: "{{ route('adminLoginRequest') }}",
+                    method: 'POST',
                     data: formData,
                     success: function(response) {
-                        if (response.redirect_url) { 
-                            window.location.href = response.redirect_url;
+                        if (response.redirect_url) {
+                            toastr.success('Login successful.', 'Success');
+                            setInterval(() => { window.location.href = response.redirect_url }, 2000);
                         } else {
                             toastr.error('Unexpected response from the server.', 'Error');
                         }
                     },
                     error: function(xhr, status, error) {
-                        $('#loginButtonText').show(); 
-                        $('#loginButtonLoader').hide(); 
-    
-                        0
+                        $('#loginButtonText').show();
+                        $('#loginButtonLoader').hide();
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            toastr.error(xhr.responseJSON.error, 'Error');
+                        } else {
+                            toastr.error('An error occurred while processing your request.',
+                                'Error');
+                        }
                     }
                 });
             });
         });
     </script>
-    
+
 </body>
 
 </html>

@@ -23,9 +23,17 @@
                         <span class="nav-text">Dashboard</span>
                     </a>
                 </li>
-
                 <li class="section-title">
                     Elements
+                </li>
+                <li class="{{ request()->route()->getName() == 'shiftWiseMenuIndex' ? 'active' : '' }}">
+                    <a class="sidenav-item-link" href="{{ route('shiftWiseMenuIndex') }}">
+                        <i class="mdi mdi-wechat"></i>
+                        <span class="nav-text">Shift Wise Menu</span>
+                    </a>
+                </li>
+                <li class="section-title">
+                    Managements
                 </li>
                 <li class="{{ request()->route()->getName() == 'manpowerIndex' ? 'active' : '' }}">
                     <a class="sidenav-item-link" href="{{ route('manpowerIndex') }}">
@@ -54,7 +62,7 @@
             <div class="sidebar-footer-content">
                 <ul class="d-flex">
                     <li>
-                        <a href="#"><i class="mdi mdi-settings"></i></a>
+                        <a href="#"></a>
                     </li>
                 </ul>
             </div>

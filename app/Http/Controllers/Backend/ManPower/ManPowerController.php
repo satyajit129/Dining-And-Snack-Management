@@ -14,7 +14,7 @@ class ManPowerController extends Controller
     public function manpowerIndex()
     {
         try {
-            
+
             $shifts = Shift::all();
             $manpowers = Manpower::where('status', 1)->with('shift')->latest()->paginate(10);
             return view('backend.pages.manpower.index', compact('manpowers', 'shifts'));
@@ -29,25 +29,25 @@ class ManPowerController extends Controller
                 'shift_id' => 'required|exists:shifts,id',
                 'count' => 'required|integer',
             ]);
-    
+
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()->first()], 422);
             }
-    
+
             $existingRecord = Manpower::where('shift_id', $request->shift_id)
                 ->whereDate('date', now()->toDateString())
                 ->first();
-    
+
             if ($existingRecord) {
                 return response()->json(['error' => 'Manpower record for this shift already exists for today. You can just update the value today'], 422);
             }
-    
+
             $manpower = new Manpower();
             $manpower->shift_id = $request->shift_id;
             $manpower->count = $request->count;
             $manpower->date = now();
             $manpower->save();
-    
+
             $manpower->load('shift');
             return response()->json([
                 'success' => 'Manpower Added Successfully',
@@ -75,7 +75,7 @@ class ManPowerController extends Controller
             $validator = Validator::make($request->all(), [
                 'id' => 'required|exists:manpower,id',
                 'shift_id' => 'required|exists:shifts,id',
-                'count' => 'required',
+                'count' => 'required|integer',
             ]);
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()->first()], 422);
@@ -101,7 +101,7 @@ class ManPowerController extends Controller
             $manpower = Manpower::find($id);
             $manpower->status = 0;
             $manpower->save();
-        
+
             $manpower->load('shift');
             return response()->json([
                 'success' => 'Manpower Deleted successfully',
@@ -110,6 +110,6 @@ class ManPowerController extends Controller
         } catch (Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
-        
+
     }
 }
