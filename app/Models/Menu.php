@@ -18,4 +18,8 @@ class Menu extends Model
     {
         return $this->hasMany(MenuAssignment::class);
     }
+    public function shiftWiseMenus()
+    {
+        return $this->hasMany(ShiftWiseMenu::class);
+    }
 }

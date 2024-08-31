@@ -7,8 +7,7 @@
 
         <div class="app-brand">
             <a href="{{ route('adminDashboard') }}">
-                <img src="{{ asset('admin/settings/logo/' . $settings->website_logo) }}" alt=""
-                    style="width: 50px; border-radius:50%;">
+                
                 <span class="brand-name">{{ $settings->website_name }}</span>
             </a>
         </div>
@@ -26,7 +25,7 @@
                 <li class="section-title">
                     Elements
                 </li>
-                <li class="{{ request()->route()->getName() == 'shiftWiseMenuIndex' ? 'active' : '' }}">
+                <li class="{{ request()->route()->getName() == 'shiftWiseMenuIndex' || request()->route()->getName() == 'shiftWiseMenuCreate' ? 'active' : '' }}">
                     <a class="sidenav-item-link" href="{{ route('shiftWiseMenuIndex') }}">
                         <i class="mdi mdi-wechat"></i>
                         <span class="nav-text">Shift Wise Menu</span>

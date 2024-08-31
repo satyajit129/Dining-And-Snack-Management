@@ -24,7 +24,8 @@
                     </div>
                 @endif
                 <div class="card-header align-items-center px-3 px-md-5">
-                    <h2>ManPower Index </h2> <span class="badge badge-sm bg-info text-white">(This background color Refers that this data is based on today)</span>
+                    <h2>ManPower Index </h2> <span class="badge badge-sm bg-info text-white">(This background color Refers
+                        that this data is based on today)</span>
 
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal_add">
                         Add ManPower
@@ -45,10 +46,11 @@
                         </thead>
                         <tbody>
                             @foreach ($manpowers as $manpower)
-                            @php
-                                $isToday = \Carbon\Carbon::parse($manpower->date)->isToday();
-                            @endphp
-                                <tr id="manpower-row-{{ $manpower->id }}" class="{{ $isToday ? 'bg-info text-white' : '' }}">
+                                @php
+                                    $isToday = \Carbon\Carbon::parse($manpower->date)->isToday();
+                                @endphp
+                                <tr id="manpower-row-{{ $manpower->id }}"
+                                    class="{{ $isToday ? 'bg-info text-white' : '' }}">
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $manpower->shift->name }}</td>
                                     <td>{{ \Carbon\Carbon::parse($manpower->date)->format('d-m-Y') }}</td>
@@ -104,6 +106,30 @@
             </div>
         </x-modal>
         {{-- Edit Modal --}}
+
+        {{-- Delete Modal --}}
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this data?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Delete Modal --}}
     </div>
 @endsection
 
@@ -126,8 +152,8 @@
                         $('#modal_add').modal('hide');
                         let formatted_date = moment(response.manpower.date).format(
                             'DD-MM-YYYY');
-                            let rowCount = $('#ManpowerFormtable tr').length;
-                            let newIndex = rowCount;
+                        let rowCount = $('#ManpowerFormtable tr').length;
+                        let newIndex = rowCount;
                         let newRow = `
                         <tr>
                             <td>${rowCount}</td>
@@ -159,8 +185,8 @@
 
             });
             $('.modal-close').on('click', function() {
-                    $('#modal_add').modal('hide');
-                });
+                $('#modal_add').modal('hide');
+            });
         });
     </script>
     {{-- add man power --}}
@@ -192,7 +218,9 @@
                                 success: function(response) {
                                     $('#modal_edit').modal('hide');
 
-                                    let formatted_date = moment(response.manpower.date).format('DD-MM-YYYY');
+                                    let formatted_date = moment(response
+                                        .manpower.date).format(
+                                        'DD-MM-YYYY');
 
                                     let updatedRow = `
                                         <tr id="manpower-row-${response.manpower.id}">
@@ -216,7 +244,8 @@
                                     `;
 
                                     // Replace the existing row with the updated data
-                                    $(`#manpower-row-${response.manpower.id}`).replaceWith(updatedRow);
+                                    $(`#manpower-row-${response.manpower.id}`)
+                                        .replaceWith(updatedRow);
 
                                     if (response.success) {
                                         toastr.success(response.success);
@@ -227,11 +256,14 @@
                                 },
                                 error: function(xhr, status, error) {
                                     $('#modal_edit').modal('hide');
-                                    if (xhr.responseJSON && xhr.responseJSON.error) {
-                                        toastr.error(xhr.responseJSON.error, 'Error');
+                                    if (xhr.responseJSON && xhr.responseJSON
+                                        .error) {
+                                        toastr.error(xhr.responseJSON.error,
+                                            'Error');
                                     } else {
 
-                                }}
+                                    }
+                                }
                             })
                         });
                     },
@@ -254,18 +286,20 @@
     {{-- Delete man power --}}
     <script>
         $(document).ready(function() {
-            $('.delete-btn').on('click', function() {
-                var id = $(this).data('id');
-                // Show confirmation dialog
-            var confirmation = confirm('Are you sure you want to delete this data?');
+            var deleteId = null;
 
-            if (confirmation) {
-                var id = $(this).data('id');
+            $('.delete-btn').on('click', function() {
+                deleteId = $(this).data('id');
+                // Show the modal
+                $('#deleteModal').modal('show');
+            });
+
+            $('#confirmDelete').on('click', function() {
                 $.ajax({
                     url: "{{ route('manpowerDelete') }}",
                     type: "GET",
                     data: {
-                        id: id
+                        id: deleteId
                     },
                     success: function(response) {
                         console.log(response);
@@ -285,10 +319,12 @@
                                 'Error');
                         }
                     }
-                })
-            }
+                });
+                // Hide the modal
+                $('#deleteModal').modal('hide');
             });
         });
     </script>
+
     {{-- Delete man power --}}
 @endsection

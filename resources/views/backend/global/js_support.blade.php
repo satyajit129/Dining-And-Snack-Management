@@ -8,6 +8,7 @@
 <script src="{{ asset('admin/source/plugins/jvectormap/jquery-jvectormap-us-aea.js') }}"></script>
 <script src="{{ asset('admin/source/plugins/daterangepicker/moment.min.js') }}"></script>
 <script src="{{ asset('admin/source/plugins/daterangepicker/daterangepicker.js') }}"></script>
+<script src="{{ asset('admin/source/plugins/select2/js/select2.min.js') }}"></script>
 <script>
     jQuery(document).ready(function() {
         jQuery('input[name="dateRange"]').daterangepicker({

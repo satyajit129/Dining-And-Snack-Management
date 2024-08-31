@@ -44,6 +44,11 @@ Route::middleware([AdminMiddleware::class])->prefix('admin')->group(function () 
 
     // Shift Wise Menu
     Route::get('shift-wise-menu-index',[ShiftWiseMenuController::class,'shiftWiseMenuIndex'])->name('shiftWiseMenuIndex');
+    Route::get('shift-wise-menu-create',[ShiftWiseMenuController::class,'shiftWiseMenuCreate'])->name('shiftWiseMenuCreate');
+    Route::post('shift-wise-menu-store',[ShiftWiseMenuController::class,'shiftWiseMenuStore'])->name('shiftWiseMenuStore');
+    Route::get('shift-wise-menu-edit/{id}',[ShiftWiseMenuController::class,'shiftWiseMenuEditContent'])->name('shiftWiseMenuEditContent');
+    Route::post('shift-wise-menu-update/{id}',[ShiftWiseMenuController::class,'shiftWiseMenuUpdate'])->name('shiftWiseMenuUpdate');
+    Route::get('shift-wise-menu-delete/{id}',[ShiftWiseMenuController::class,'shiftWiseMenuDelete'])->name('shiftWiseMenuDelete');
 });
 
 // Auth::routes();
